@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, FlatList, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, FlatList, SafeAreaView, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import LatexView from './components/LatexView';
 
 export default function App() {
+  const [input, setInput] = useState('c = \\pm\\sqrt{a^2 + b^2}');
+
   // Sample data: a list of LaTeX formulas (mixed with some text)
   // Each item has a unique ID and the formula string.
   const latexData = [
@@ -20,23 +22,60 @@ export default function App() {
   ];
 
   const renderItem = ({ item }) => (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity 
+      style={styles.itemContainer} 
+      onPress={() => setInput(item.formula)}
+    >
       <Text style={styles.itemTitle}>{item.title}</Text>
-      <LatexView latex={item.formula} />
-    </View>
+      <View pointerEvents="none">
+        <LatexView latex={item.formula} />
+      </View>
+    </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Title */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Math Formula Viewer</Text>
       </View>
-      <FlatList
-        data={latexData}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContent}
-      />
+
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={styles.keyboardContainer}
+      >
+        {/* Input Area */}
+        <View style={styles.inputSection}>
+          <Text style={styles.sectionLabel}>Try it yourself:</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setInput}
+            value={input}
+            placeholder="Type LaTeX here... e.g. E=mc^2"
+            autoCapitalize="none"
+            autoCorrect={false}
+            multiline
+          />
+        </View>
+
+        {/* Live Preview */}
+        <View style={styles.previewSection}>
+          <Text style={styles.sectionLabel}>Preview:</Text>
+          <View style={styles.previewContainer}>
+            <LatexView latex={input} />
+          </View>
+        </View>
+
+        {/* Examples List */}
+        <Text style={styles.listHeader}>Examples (Tap to edit):</Text>
+        <FlatList
+          data={latexData}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.listContent}
+          keyboardShouldPersistTaps="handled" 
+        />
+      </KeyboardAvoidingView>
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -46,7 +85,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 40, // Avoid status bar overlap nicely
+    paddingTop: 40,
   },
   header: {
     padding: 16,
@@ -59,17 +98,62 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
+  keyboardContainer: {
+    flex: 1,
+  },
+  inputSection: {
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  sectionLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#666',
+  },
+  input: {
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    fontSize: 16,
+    backgroundColor: '#fff9c4', // Light yellow to make it pop
+  },
+  previewSection: {
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  previewContainer: {
+    height: 120, // Slightly taller for the main preview
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    overflow: 'hidden', // Ensures webview corner radius works
+  },
+  listHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 16,
+    marginTop: 10,
+    marginBottom: 5,
+  },
   listContent: {
     padding: 16,
-    gap: 16, // Adds space between items
+    paddingTop: 0,
+    gap: 16,
   },
   itemContainer: {
     marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#eee',
+    padding: 8,
+    borderRadius: 8,
   },
   itemTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 4,
     color: '#333',
   },
 });
