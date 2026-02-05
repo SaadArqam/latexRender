@@ -1,39 +1,76 @@
-# Simple Latex Viewer
+# LatexRenderer
 
-Hi! This is my internship assignment project. I built a simple React Native app using Expo that shows math formulas on the screen.
+A React Native application for rendering LaTeX mathematical formulas using Expo and `react-native-webview`.
 
-## What the app does
-It displays a list of math formulas (like the quadratic formula, integrals, etc.). You can scroll through them, and they look just like they do in a textbook. If a formula is typed wrong, it shows "Invalid LaTeX" instead of crashing the app.
+## Architecture Decisions
 
-## How it works (The Techy Part)
-I needed a way to render LaTeX (the math code) because React Native doesn't understand it by default. 
-1. I used a component called `LatexView` which is basically a mini web browser (WebView).
-2. Inside that WebView, I load a popular library called **KaTeX** from the internet.
-3. When I pass a math string (like `E=mc^2`) to the component, the WebView uses KaTeX to turn that text into a nice looking math picture using HTML and CSS.
+The core architectural requirement was to render complex LaTeX formulas accurately within a React Native environment.
 
-## Why I used Expo
-I'm still new to mobile development, and I was advised to use Expo because:
-- It's super easy to set up (`npx create-expo-app`).
-- I don't have to deal with Xcode or Android Studio directly, which is scary for now.
-- I can run it on my phone quickly.
+### 1. Rendering Engine: WebView with KaTeX
+We chose a **WebView-based approach** utilizing the **KaTeX** library.
+- **Why:** React Native does not implement a native TeX typesetting engine. Recreating the layout algorithms (boxes, glue, penalty) of TeX natively would be prohibitively complex for this scope.
+- **Implementation:** The `LatexView` component acts as a wrapper around a `WebView`. It injects a minimal HTML shell that loads KaTeX from a CDN and executes the rendering logic via JavaScript.
 
-## Limitations
-There are some standard drawbacks to my simple approach:
-- **Internet Required**: Is uses a CDN (Content Delivery Network) to load KaTeX. If you are offline, the math rendering might not work properly (unless I download the files into the app, which I haven't done yet).
-- **Performance**: Listing many WebViews (one for each formula) can be heavy for the phone. A native solution would be faster, but this works for a simple list!
-- **Sizing**: The height of each formula box is fixed right now. If a formula is huge, it might get cut off or look small.
+### 2. Framework: Expo Managed Workflow
+- **Decision:** Used Expo to accelerate the bootstrap process and avoid initial native build configuration complexity.
+- **Impact:** We rely on the `react-native-webview` library compatible with Expo to handle the underlying native View implementations (Android `WebView` / iOS `WKWebView`).
 
-## Future Improvements
-Once I learn more about native modules, I would like to:
-- Use a detailed native library instead of a WebView for better performance.
-- Handle dynamic height so big formulas fit perfectly.
-- Add support for offline rendering.
+---
 
-## How to Run it
-1. Make sure you have Node.js installed.
-2. Run `npm install` inside the project folder.
-3. Run `npx expo start`.
-4. Scan the QR code with the **Expo Go** app on your phone.
+## Native ↔ RN Boundary
 
-Thanks for checking it out!
-# latexRender
+The application traverses the React Native Bridge to render content, but differs from a standard Native Module implementation.
+
+### The Boundary Model
+1.  **React Native (JS Layer):** Manages the application state (list of formulas, user input) and component lifecycle.
+2.  **The Bridge:** Data (`latex` string) is passed from the JS layer to the Native layer (WebView).
+3.  **WebView (Native/Web Layer):**
+    - The `react-native-webview` component instantiates a native Android `WebView` or iOS `WKWebView`.
+    - **Data Injection:** We strictly pass data one-way by injecting the HTML source directly via the `source` prop. The LaTeX string is serialized (`JSON.stringify`) and embedded into the HTML template script.
+    
+    ```javascript
+    // App.js (JS) -> Bridge -> WebView (Native) -> DOM (Web)
+    const htmlContent = `... const latexString = ${JSON.stringify(latex)}; ...`;
+    ```
+
+### Boundary Considerations
+- **Crossing Frequency:** The boundary is crossed whenever the `latex` prop updates.
+- **Serialization:** String serialization is cheap for small formulas but technically adds overhead compared to shared memory (JSI), though negligible here compared to the DOM layout cost.
+
+---
+
+## Performance Considerations
+
+Rendering multiple WebViews is the primary performance bottleneck in this architecture.
+
+### 1. Memory Overhead
+- **Issue:** Each `LatexView` creates a full browser instance context. On a `FlatList` with 50+ items, this would consume significant memory (hundreds of MBs).
+- **Mitigation:**
+    - `FlatList` windowing (virtualization) ensures only visible WebViews are kept in memory/DOM.
+    - `androidLayerType="software"` (or similar props) can sometimes be used to trade GPU memory for CPU cycles, though default hardware acceleration is smoother.
+
+### 2. Network Dependency & Latency
+- **Issue:** The current implementation loads KaTeX from a CDN (`cdn.jsdelivr.net`).
+- **Impact:**
+    - **First Paint:** There is a noticeable delay on first load while assets are fetched.
+    - **Reliability:** The renderer fails if the device is offline.
+    - **Mitigation Strategy (Future):** Bundle `katex.min.js` and CSS files locally within the app assets to remove network dependency and speed up initialization.
+
+### 3. Layout Thrashing
+- **Issue:** The WebView height is currently fixed (`height: 100`).
+- **Edge Case:** Large formulas (matrices, long integrals) may be clipped.
+- **Solution:** Implementing automatic height adjustment would require a callback from the WebView (`window.ReactNativeWebView.postMessage(document.body.scrollHeight)`) to the RN parent to update the layout state, which introduces a "flash" of resizing content.
+
+---
+
+## Tradeoffs
+
+| Feature | Decision Made | Tradeoff |
+| :--- | :--- | :--- |
+| **Rendering Accuracy** | **KaTeX (Web)** | **Pros:** Perfect LaTeX compliance, beautiful type handling.<br>**Cons:** Heavy rendering engine (WebView). |
+| **Development Speed** | **Expo + HTML Injection** | **Pros:** Extremely fast implementation (hours v. weeks).<br>**Cons:** Limited control over native touch events inside the view. |
+| **List Performance** | **Multiple WebViews** | **Pros:** Simple component isolation.<br>**Cons:** High per-item resource cost. A "Native" solution (Canvas drawing) would look worse but scroll 60fps effortlessly. |
+| **Asset Delivery** | **CDN** | **Pros:** Zero app bundle size increase.<br>**Cons:** Requires internet connection; slower startup. |
+
+## Evaluation Summary
+This project demonstrates a pragmatic approach to bridging the gap between Native mobile UI and complex text typesetting, prioritizing correctness and ease of use while acknowledging the performance costs inherent in WebView-based list rendering.

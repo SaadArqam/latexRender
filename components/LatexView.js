@@ -57,10 +57,9 @@ export default function LatexView({ latex }) {
         originWhitelist={['*']}
         source={{ html: htmlContent }}
         style={styles.webview}
-        scrollEnabled={false} // Disable scrolling for better list UX
+        scrollEnabled={false} 
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
-        // Transparent background to blend in (optional, but looks nice)
         opaque={false} 
       />
     </View>
@@ -69,9 +68,9 @@ export default function LatexView({ latex }) {
 
 const styles = StyleSheet.create({
   container: {
-    height: 100, // Fixed height as requested for the list items
+    height: 100,
     width: '100%',
-    backgroundColor: '#f6f6f6', // Light gray background for the container
+    backgroundColor: '#f6f6f6',
     borderRadius: 8,
     overflow: 'hidden',
     marginVertical: 4,

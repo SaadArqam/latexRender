@@ -6,8 +6,7 @@ import LatexView from './components/LatexView';
 export default function App() {
   const [input, setInput] = useState('c = \\pm\\sqrt{a^2 + b^2}');
 
-  // Sample data: a list of LaTeX formulas (mixed with some text)
-  // Each item has a unique ID and the formula string.
+
   const latexData = [
     { id: '1', title: 'Quadratic Formula', formula: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}' },
     { id: '2', title: 'Calculus Integral', formula: '\\int_0^\\infty x^2 dx' },
@@ -15,7 +14,7 @@ export default function App() {
     { id: '4', title: 'Euler\'s Identity', formula: 'e^{i\\pi} + 1 = 0' },
     { id: '5', title: 'Matrix', formula: '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}' },
     { id: '6', title: 'Maxwell\'s Equations', formula: '\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}' },
-    { id: '7', title: 'Invalid Formula', formula: '\\frac{1}{0' }, // Missing brace
+    { id: '7', title: 'Invalid Formula', formula: '\\frac{1}{0' }, 
     { id: '8', title: 'Summation', formula: '\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}' },
     { id: '9', title: 'Limit', formula: '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1' },
     { id: '10', title: 'Einstein', formula: 'E = mc^2' },
@@ -35,7 +34,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Title */}
+
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Math Formula Viewer</Text>
       </View>
@@ -44,7 +43,7 @@ export default function App() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
         style={styles.keyboardContainer}
       >
-        {/* Input Area */}
+
         <View style={styles.inputSection}>
           <Text style={styles.sectionLabel}>Try it yourself:</Text>
           <TextInput
@@ -58,7 +57,7 @@ export default function App() {
           />
         </View>
 
-        {/* Live Preview */}
+
         <View style={styles.previewSection}>
           <Text style={styles.sectionLabel}>Preview:</Text>
           <View style={styles.previewContainer}>
@@ -66,7 +65,7 @@ export default function App() {
           </View>
         </View>
 
-        {/* Examples List */}
+
         <Text style={styles.listHeader}>Examples (Tap to edit):</Text>
         <FlatList
           data={latexData}
@@ -118,18 +117,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     fontSize: 16,
-    backgroundColor: '#fff9c4', // Light yellow to make it pop
+    backgroundColor: '#fff9c4', 
   },
   previewSection: {
     paddingHorizontal: 16,
     marginBottom: 10,
   },
   previewContainer: {
-    height: 120, // Slightly taller for the main preview
+    height: 120, 
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    overflow: 'hidden', // Ensures webview corner radius works
+    overflow: 'hidden', 
   },
   listHeader: {
     fontSize: 18,
