@@ -8,16 +8,21 @@ export default function App() {
 
 
   const latexData = [
-    { id: '1', title: 'Quadratic Formula', formula: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}' },
-    { id: '2', title: 'Calculus Integral', formula: '\\int_0^\\infty x^2 dx' },
-    { id: '3', title: 'Pythagorean Theorem', formula: 'a^2 + b^2 = c^2' },
-    { id: '4', title: 'Euler\'s Identity', formula: 'e^{i\\pi} + 1 = 0' },
-    { id: '5', title: 'Matrix', formula: '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}' },
-    { id: '6', title: 'Maxwell\'s Equations', formula: '\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}' },
-    { id: '7', title: 'Invalid Formula', formula: '\\frac{1}{0' }, 
-    { id: '8', title: 'Summation', formula: '\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}' },
-    { id: '9', title: 'Limit', formula: '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1' },
-    { id: '10', title: 'Einstein', formula: 'E = mc^2' },
+    { id: '1', title: 'Speed Formula', formula: 'v = \\frac{d}{t}' },
+    { id: '2', title: 'Pythagorean Theorem', formula: 'a^2 + b^2 = c^2' },
+    { id: '3', title: 'Logarithm Condition', formula: 'x > 0 \\text{ and } x \\neq 1, \\text{ then } \\log x \\text{ is defined}' },
+    { id: '4', title: 'Area Integration', formula: 'A = \\int_a^b f(x)\\,dx' },
+    { id: '5', title: 'Complex Rational Function', formula: 'f(x) = \\frac{(x^2 + 3x + 5)(x^3 - 2x + 7)(x^4 + x^2 + 1)}{(x - 1)(x + 2)(x^2 + x + 1)}' },
+    { id: '6', title: 'Nested Fraction with Sums', formula: '\\frac{(a_1 + a_2 + a_3 + \\cdots + a_n)^2}{\\sqrt{(b_1^2 + b_2^2 + \\cdots + b_n^2)(c_1^2 + c_2^2 + \\cdots + c_n^2)}}' },
+    { id: '7', title: 'Long Sum Expression', formula: '\\left(a_1 + a_2 + a_3 + a_4 + a_5 + a_6 + a_7 + a_8 + a_9 + a_{10} + a_{11} + a_{12} + a_{13} + a_{14} + a_{15} + a_{16} + a_{17} + a_{18} + a_{19} + a_{20} + a_{21} + a_{22} + a_{23} + a_{24} + a_{25} + \\cdots + a_n \\right)^2' },
+    { id: '8', title: 'Trig Identities', formula: '\\sin^2 x + \\cos^2 x = 1 \\text{ and } \\tan x = \\frac{\\sin x}{\\cos x}' },
+    { id: '9', title: 'Difference of Squares', formula: 'x^2 - 9 = (x-3)(x+3)' },
+    { id: '10', title: 'Invalid - Missing Brace', formula: '\\frac{a+b }{ c' },
+    { id: '11', title: 'Invalid - Incomplete Sqrt', formula: '\\sqrt{2 +' },
+    { id: '12', title: 'Invalid - Unknown Command', formula: '\\unknowncommand{x}' },
+    { id: '13', title: 'Dollar Sign Test 1', formula: '\\text{Cost: } \\$500 \\text{ Discount: } \\$50' },
+    { id: '14', title: 'Dollar Sign Test 2', formula: '\\text{Earned } \\$1000' },
+    { id: '15', title: 'Stress Test Formula', formula: '\\frac{(a_1 + a_2 + a_3 + \\cdots + a_n)^2}{\\sqrt{(b_1^2 + b_2^2 + \\cdots + b_n^2)(c_1^2 + c_2^2 + \\cdots + c_n^2)}}' },
   ];
 
   const renderItem = ({ item }) => (
